@@ -56,7 +56,7 @@ class StructuredPaperAnalysis(BaseModel):
 
     chinese_title: str = Field(description="论文标题的学术化中文翻译, 只输出标题文本, 不要解释性副标题. ")
     research_background: str = Field(
-        description="面向偏微分方程与分析理论读者, 说明研究对象、方程或模型、关键未知量、问题设定、已有理论背景以及本文试图推进的空白. "
+        description="面向有限元与偏微分方程数值解法读者, 说明研究对象、方程或模型、关键未知量、问题设定、已有理论背景以及本文试图推进的空白. "
     )
     main_results: str = Field(
         description="按照“在什么假设下证明了什么结论”来概述主要结果, 尽量保留函数空间、参数范围、定理编号、误差阶、增长率、尺度关系与代表性公式. "
@@ -65,7 +65,7 @@ class StructuredPaperAnalysis(BaseModel):
         description="说明证明中的核心障碍、作者的真正创新点、关键估计、关键引理或分析框架, 不要泛泛罗列方法名. "
     )
     comparison_with_previous_work: str = Field(
-        description="比较本文与既有 PDE/分析理论文献的推进、假设差异、时间尺度、适用范围、代价与局限, 优先点名文中明确提到的前人工作. "
+        description="比较本文与既有 有限元与偏微分方程数值解法文献的推进、假设差异、时间尺度、适用范围、代价与局限, 优先点名文中明确提到的前人工作. "
     )
 
     @field_validator("chinese_title", mode="before")
@@ -136,7 +136,7 @@ ANALYSIS_CONTENT_REQUIREMENTS = """
 
 ANALYSIS_FALLBACK_REQUIREMENTS = """
 内容要求：
-1. 回答对象始终是偏微分方程与分析理论方向的研究者, 而不是泛科学读者或宣传稿读者.
+1. 回答对象始终是有限元与偏微分方程数值解法方向的研究者, 而不是泛科学读者或宣传稿读者.
 2. 研究对象和背景：说明研究对象、方程/模型设定、关键未知量、问题背景、本文试图解决的核心空白；尽量写出具体方程或核心表达式, 不要停留在方向标签.
 3. 主要定理或主要结果：尽量写出作者真正证明的核心结论、关键假设、函数空间、尺度关系、误差阶、增长率或代表性公式.
 4. 研究方法、关键技术和核心工具：解释主要技术障碍、关键创新和证明框架；如果文中出现新的泛函、单调量、能量方法、bootstrap、紧性、Carleman 估计、Strichartz 估计、频率分解等工具, 尽量具体点明它们起什么作用.
@@ -146,7 +146,7 @@ ANALYSIS_FALLBACK_REQUIREMENTS = """
 
 CLASSIFICATION_CONTENT_REQUIREMENTS = """
 分类要求：
-1. 请以偏微分方程与分析理论研究者的眼光判断相关性, 不要按学科大类或应用场景机械归类.
+1. 请以有限元与偏微分方程数值解法研究者的眼光判断相关性, 不要按学科大类或应用场景机械归类.
 2. 优先关注论文是否真正涉及存在唯一性、正则性、爆破、散射、衰减、稳定性、渐近行为、先验估计、函数空间理论、调和分析工具、边界层、无粘极限、色散估计等理论问题.
 3. 如果论文主要是数值模拟、算法实现、工程建模、机器学习应用或实验现象描述, 而缺少明确的 PDE/分析理论推进, 应降低优先级或判为不相关.
 4. `reason` 应尽量点出具体对象或技术关键词, 如“Navier-Stokes 正则性”“Strichartz 估计与散射”“椭圆边界正则性”“无粘极限”, 避免泛泛写成“与分析有关”.
@@ -402,7 +402,7 @@ def _build_analysis_cleanup_messages(
         f"[comparison_with_previous_work]\n{normalize_analysis_block_text(analysis_blocks.comparison_with_previous_work)}\n"
     )
     return [
-        {"role": "system", "content": "你是一位偏微分方程与分析理论方向的学术文本清洗助手. 请严格遵守返回 schema, 只做清洗和整理, 不重新分析论文. "},
+        {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的学术文本清洗助手. 请严格遵守返回 schema, 只做清洗和整理, 不重新分析论文. "},
         {"role": "user", "content": prompt},
     ]
 
@@ -565,7 +565,7 @@ def _build_structured_analysis_messages(pdf_content, paper=None, title=None):
         f"{pdf_content}\n"
     )
     return [
-        {"role": "system", "content": "你是一位偏微分方程与分析理论方向的研究助手. 请使用中文回复, 并严格遵守返回 schema. "},
+        {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的研究助手. 请使用中文回复, 并严格遵守返回 schema. "},
         {"role": "user", "content": prompt},
     ]
 
@@ -608,7 +608,7 @@ def _build_fallback_analysis_messages(pdf_content, paper=None, title=None):
         f"{pdf_content}\n"
     )
     return [
-        {"role": "system", "content": "你是一位偏微分方程与分析理论方向的研究助手. 请使用中文回复. "},
+        {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的研究助手. 请使用中文回复. "},
         {"role": "user", "content": prompt},
     ]
 
@@ -746,7 +746,7 @@ def _build_classification_messages(paper, abstract):
         f"{chr(10).join([f'- {topic}' for topic in SECONDARY_TOPICS])}\n"
     )
     return [
-        {"role": "system", "content": "你是一位偏微分方程与分析理论方向的学术论文分类专家. 请严格遵守返回 schema. "},
+        {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的学术论文分类专家. 请严格遵守返回 schema. "},
         {"role": "user", "content": prompt},
     ]
 
@@ -817,7 +817,7 @@ def check_topic_relevance(paper):
             logger.warning("结构化分类失败, 将回退到普通文本模式: %s", str(structured_error))
             result = ai_client.chat_completion(
                 messages=[
-                    {"role": "system", "content": "你是一位偏微分方程与分析理论方向的学术论文分类专家. 请严格按照要求的格式回答. "},
+                    {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的学术论文分类专家. 请严格按照要求的格式回答. "},
                     {"role": "user", "content": _build_classification_fallback_prompt(paper, abstract)},
                 ]
             )
