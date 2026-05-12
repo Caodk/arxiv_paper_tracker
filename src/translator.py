@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 TRANSLATION_TITLE_REQUIREMENTS = """
 翻译要求：
-1. 翻译对象默认面向偏微分方程与分析理论研究者，而不是面向泛科普读者。
+1. 翻译对象默认面向有限元与偏微分方程数值解法的研究者，而不是面向泛科普读者。
 2. 标题翻译要学术、准确、克制，优先使用本领域常见术语，不要写成解释性副标题，也不要为了“顺口”改写定理强度。
 3. 原文中的数学对象、方程名、模型名、性质名、方法名要尽量使用稳定译法；拿不准时宁可直译，也不要擅自意译发挥。
 4. 不要遗漏限定词，如 global, local, quantitative, asymptotic, sharp, generic, axisymmetric, without swirl, critical, supercritical, conditional 等。
@@ -38,7 +38,7 @@ class StructuredTitleTranslation(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     chinese_title: str = Field(
-        description="面向偏微分方程与分析理论读者的中文标题翻译, 只返回标题文本本身。若标题中出现任何公式、LaTeX 命令、变量名或符号片段, 必须逐字符原样保留。"
+        description="面向有限元与偏微分方程数值解法读者的中文标题翻译, 只返回标题文本本身。若标题中出现任何公式、LaTeX 命令、变量名或符号片段, 必须逐字符原样保留。"
     )
 
     @field_validator("chinese_title", mode="before")
@@ -93,7 +93,7 @@ def _build_translation_messages(paper, translate_title_only=False):
             f"摘要: {paper.summary}\n"
         )
     return [
-        {"role": "system", "content": "你是一位偏微分方程与分析理论方向的学术翻译专家. 请严格遵守返回 schema. "},
+        {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的学术翻译专家. 请严格遵守返回 schema. "},
         {"role": "user", "content": prompt},
     ]
 
@@ -170,7 +170,7 @@ def translate_abstract_with_deepseek(paper, translate_title_only=False, use_cach
             prompt = _build_translation_fallback_prompt(paper, translate_title_only=translate_title_only)
             translation = ai_client.chat_completion(
                 messages=[
-                    {"role": "system", "content": "你是一位偏微分方程与分析理论方向的学术翻译专家. "},
+                    {"role": "system", "content": "你是一位有限元与偏微分方程数值解法方向的学术翻译专家. "},
                     {"role": "user", "content": prompt},
                 ]
             )
